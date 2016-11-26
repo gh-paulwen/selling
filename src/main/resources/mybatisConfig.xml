@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+  <!-- 配置类别名 -->
+  <typeAliases>
+    <!-- 配置一个包可以让包中的类名作为全类名的别名 -->
+    <package name="com.zhklong.selling.entity"/>
+  </typeAliases>
+  
+  <!-- 配置mapper的xml文件路径 -->
+  <mappers>
+    <package name="com.zhklong.selling.mapper"/>
+  </mappers>
+</configuration>
