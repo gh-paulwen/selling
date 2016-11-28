@@ -1,28 +1,34 @@
 package com.zhklong.selling.listener;
 
-import java.util.HashMap;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
+import com.zhklong.selling.util.SessionContainer;
+
+/**
+ * @author paul
+ * @since 2016-11-24
+ * tomcat 启动时存放一个SessionContainer到application域
+ * 
+ * */
 public class ApplicationLifeListener implements ServletContextListener{
 
+	private final static Logger logger = Logger.getLogger(ApplicationLifeListener.class.getName());
 	public void contextInitialized(ServletContextEvent sce) {
 		/**
-		 * 存放sessionid及session
+		 * sessionContainer
 		 * */
-		sce.getServletContext().setAttribute("sessionMap", new HashMap<String,HttpSession>());
+		sce.getServletContext().setAttribute("uuidContainer", new SessionContainer());
 		
-		/**
-		 * 存放ip地址及sessionid
-		 * */
-		sce.getServletContext().setAttribute("ipSessionMap", new HashMap<String,String>());
+		logger.info("****************************server start****************************");
+		
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
-		sce.getServletContext().removeAttribute("sessionMap");
-		sce.getServletContext().removeAttribute("ipSessionMap");
+		sce.getServletContext().removeAttribute("uuidContainer");
+		logger.info("****************************server stop*****************************");
 	}
 
 }

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 import com.zhklong.selling.entity.Employee;
 import com.zhklong.selling.entity.EmployeeType;
@@ -15,6 +15,7 @@ import com.zhklong.selling.mapper.FunctionalityMapper;
 import com.zhklong.selling.service.IEmployeeService;
 import com.zhklong.selling.util.CodeGenerator;
 import com.zhklong.selling.util.SMSUtil;
+import com.zhklong.selling.util.SimSession;
 import com.zhklong.selling.util.ValidateUtil;
 
 /**
@@ -31,6 +32,8 @@ public class EmployeeService implements IEmployeeService {
 	private FunctionalityMapper functionalityMapper;
 
 	private SMSUtil smsUtil;
+	
+	private static final Logger logger = Logger.getLogger(EmployeeService.class.getName()); 
 
 	public void setEmployeeMapper(EmployeeMapper employeeMapper) {
 		this.employeeMapper = employeeMapper;
@@ -48,7 +51,7 @@ public class EmployeeService implements IEmployeeService {
 		this.smsUtil = smsUtil;
 	}
 
-	public Object login(Employee employee, HttpSession session,String ip, String code) {
+	public Object login(Employee employee, SimSession session, String code) {
 //		ServletContext application = session.getServletContext();
 //		Map<String,String> cellphoneMap = ApplicationUtil.getMap(application, "cellphoneMap");
 //		Map<String,String> imageVerifyCodeMap = ApplicationUtil.getMap(application, "imageVerifyCodeMap");
@@ -56,67 +59,84 @@ public class EmployeeService implements IEmployeeService {
 		String cellphone = employee.getCellphone();
 		String password = employee.getPassword();
 		if (!ValidateUtil.checkCellphone(cellphone)) {
+			logger.info("NOT a well formed cellphone number,cellphone : " + cellphone);
 			json.put("message", "不是有效的电话号码");
 			return json;
 		}
 		employee = employeeMapper.getByCell(employee.getCellphone());
 		if (employee == null) {
+			logger.info("UNREGISTERED cellphone number,cellphone : " + cellphone);
 			json.put("message", "非企业注册职工，请联系公司管理员为该手机号注册");
 			return json;
 		}
 //		String sessionCode = imageVerifyCodeMap.get(ip);
 		String sessionCode = (String) session.getAttribute("imageVerifyCode");
 		if (sessionCode == null || !sessionCode.equalsIgnoreCase(code)) {
+			logger.info("wrong verify code");
 			json.put("message", "验证码错误");
 			return json;
 		}
 		session.setAttribute("cellphone", employee.getCellphone());
 		if (employee.getDeleted() == '1') {
+			logger.info("a DELETED employee,cellphone : " + cellphone);
 			json.put("message", "非企业注册职工，请联系公司管理员为该手机号注册");
 			return json;
 		}
 		if (employee.getStatus() == '0') {
+			logger.info("INVALID employee account,cellphone : " + cellphone);
 			json.put("message", "状态无效，请联系公司管理员");
 			return json;
 		}
 		if (employee.getPasswordstatus() == '0') {
+			logger.info("first login,cellphone : " + cellphone);
 			json.put("redirect", 1);
 			json.put("message", "首次登录，请输入手机收到的短信验证码");
 			return json;
 		}
 		if (password == null || password.isEmpty()) {
+			logger.info("the password is EMPTY,cellphone : " + cellphone);
 			json.put("message", "密码不能为空");
 			return json;
 		}
 		if (!password.trim().equals(employee.getPassword())) {
+			logger.info("WRONG password,cellphone : " + cellphone);
 			json.put("message", "密码错误");
 			return json;
 		}
 		session.setAttribute(CURRENT_EMPLOYEE, employee);
+		logger.info("success , cellphone : " + cellphone + ", employee name :" + employee.getName());
 		json.put("message", "登录成功");
 		json.put("redirect", 2);
 		return json;
 	}
 
-	public Object sendCode(HttpSession session) {
+	public Object sendCode(SimSession session) {
+		Map<String,Object> json = new HashMap<String, Object>();
 		String code = CodeGenerator.generate();
 		session.setAttribute("verifyCode", code);
 		String cellphone = (String) session.getAttribute("cellphone");
-		System.out.println(cellphone);
-		if (cellphone == null || cellphone.isEmpty())
-			return "error";
+		logger.info("send sms verify code , cellphone : " + cellphone);
+		if (cellphone == null || cellphone.isEmpty()){
+			logger.info("send sms verify code but FAILED for cellphone is NOT exist , cellphone : " + cellphone);
+			json.put("message", "error");
+			return json;
+		}
 		smsUtil.sendVerifyCode(cellphone, code);
-		return "success";
+		logger.info("send sms verify code SUCCEEDED , cellphone : " + cellphone + ",sms code : " + code);
+		json.put("message", "success");
+		return json;
 	}
 
-	public Object verifyCode(String code, HttpSession session) {
+	public Object verifyCode(String code, SimSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		String message = "验证码错误";
 		String sessionCode = (String) session.getAttribute("verifyCode");
+		String cellphone  = (String) session.getAttribute("cellphone");
 		if (sessionCode == null || sessionCode.isEmpty()) {
-
+			logger.info("session sms code NOT exist");
 		}
 		if (sessionCode.equals(code)) {
+			logger.info("sms verification SUCCEEDED , cellphone : " + cellphone + ",sms code : " + code);
 			message = "验证成功";
 			json.put("redirect", 1);
 		}
@@ -124,26 +144,28 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object setPassword(String password, String repeatPassword,
-			HttpSession session) {
+	public Object setPassword(String password, String repeatPassword,SimSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		
 		if (password == null || repeatPassword == null || password.isEmpty()
 				|| repeatPassword.isEmpty()) {
+			logger.info("EMPTY password");
 			json.put("message", "密码不能为空");
 			return json;
 		} 
 		if (!password.trim().endsWith(repeatPassword.trim())) {
+			logger.info("different two , one : " + password + ",other : "+repeatPassword);
 			json.put("message","两次输入不一致");
 			return json;
 		} 
-		synchronized (this) {
+		synchronized (json) {
 			json.put("redirect", 1);
 			String cellphone = (String) session.getAttribute("cellphone");
 			Employee employee = employeeMapper.getByCell(cellphone);
 			employee.setPasswordstatus('1');
 			employee.setPassword(password);
 			employeeMapper.update(employee);
+			logger.info("SUCCEEDED,cellphone : "+employee.getCellphone());
 		}
 		json.put("message", "密码设置成功");
 		return json;
@@ -154,55 +176,64 @@ public class EmployeeService implements IEmployeeService {
 		return list;
 	}
 
-	public Object resetPassword(String cellphone, HttpSession session) {
+	public Object resetPassword(String cellphone, SimSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		if (!ValidateUtil.checkCellphone(cellphone)) {
+			logger.info("NOT well formed cellphone , cellphone : " + cellphone);
 			json.put("message", "不是有效的电话号码");
 			return json;
 		}
 		session.setAttribute("cellphone", cellphone);
 		Employee employee = employeeMapper.getByCell(cellphone);
 		if (employee == null) {
+			logger.info("NOT registered cellphone , cellphone : " + cellphone);
 			json.put("message", "非企业注册职工，请联系公司管理员为该手机号注册");
 			return json;
 		}
 		if (employee.getDeleted() == '1') {
+			logger.info("deleted cellphone , cellphone : " + cellphone);
 			json.put("message", "非企业注册职工，请联系公司管理员为该手机号注册");
 			return json;
 		}
 		if (employee.getStatus() == '0') {
+			logger.info("NOT valid status cellphone , cellphone : " + cellphone);
 			json.put("message", "状态无效，请联系公司管理员");
 			return json;
 		}
+		logger.info("ready to set password , cellphone : " + cellphone);
 		json.put("redirect", 1);
 		json.put("message", "手机号有效");
 		json.put("employee", employee);
 		return json;
 	}
 
-	public Object save(Employee employee, HttpSession session) {
+	public Object save(Employee employee,SimSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 
 		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
 
 		if (curEmp == null) {
+			logger.info("NO login");
 			json.put("message", "未登录");
 			return json;
 		}
 		if (employee.getCode() == null || employee.getCode().isEmpty()) {
+			logger.info("EMPTY employee code");
 			json.put("message", "员工编号不能为空");
 			return json;
 		}
 		if (employee.getName() == null || employee.getName().isEmpty()) {
+			logger.info("EMPTY employee name");
 			json.put("message", "员工姓名不能为空");
 			return json;
 		}
-		if (employee.getCellphone() == null
-				|| employee.getCellphone().isEmpty()) {
+		if (employee.getCellphone() == null	|| employee.getCellphone().isEmpty()) {
+			logger.info("EMPTY employee cellphone");
 			json.put("message", "员工手机号不能为空");
 			return json;
 		}
 		if (!ValidateUtil.checkCellphone(employee.getCellphone())) {
+			logger.info("NOT valid employee cellphone");
 			json.put("message", "不是有效的手机号码");
 			return json;
 		}
@@ -211,10 +242,11 @@ public class EmployeeService implements IEmployeeService {
 		employee.setCreateEmployee(curEmp.getId());
 		employeeMapper.insert(employee);
 		json.put("message", "添加成功");
+		logger.info("SUCCEEDED");
 		return json;
 	}
 
-	public Object getFunctionality(HttpSession session) {
+	public Object getFunctionality(SimSession session) {
 		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
 		if(curEmp == null)
 			return null;

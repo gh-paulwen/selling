@@ -81,11 +81,6 @@
 	</bean>
 	<bean id="imageVerifyCodeUtil" class="com.zhklong.selling.util.ImageVerifyCodeUtil"/>
 
-	<!-- interceptor -->
-	<mvc:interceptors>
-	  <bean id="crossOriginInterceptor" class="com.zhklong.selling.interceptor.CrossOriginInterceptor"/>
-	</mvc:interceptors>
-
 	<!-- Service -->
 	<bean id="employeeService" class="com.zhklong.selling.service.impl.EmployeeService">
 		<property name="employeeMapper" ref="employeeMapper" />

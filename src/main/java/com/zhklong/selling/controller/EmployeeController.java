@@ -4,11 +4,10 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,8 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.zhklong.selling.entity.Employee;
 import com.zhklong.selling.service.IEmployeeService;
 import com.zhklong.selling.service.impl.EmployeeService;
-import com.zhklong.selling.util.ApplicationUtil;
 import com.zhklong.selling.util.ImageVerifyCodeUtil;
+import com.zhklong.selling.util.SimSession;
+
 
 /**
  * @author paul
@@ -28,6 +28,10 @@ import com.zhklong.selling.util.ImageVerifyCodeUtil;
 @Controller
 @RequestMapping(path = "/employee")
 public class EmployeeController {
+	
+	private static final String SIM_SESSION = "SIM_SESSION";
+	
+	private static final Logger logger = Logger.getLogger(EmployeeController.class.getName());
 
 	private IEmployeeService employeeService;
 	
@@ -42,15 +46,6 @@ public class EmployeeController {
 	}
 	
 	/**
-	 * 获取表单
-	 * 
-	 * */
-	@RequestMapping(path="/{page}",method=RequestMethod.GET)
-	public String getForm(@PathVariable("page")String page){
-		return page;
-	}
-
-	/**
 	 * 登录提交
 	 * @param employee
 	 * @param session 由springmvc 传
@@ -59,8 +54,9 @@ public class EmployeeController {
 	@RequestMapping(path = "/submitLogin", method = RequestMethod.POST)
 	public Object submitLogin(@ModelAttribute("employee") Employee employee,@RequestParam("verifyCode")String code,HttpServletRequest request)
 			throws IOException {
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
-		Object obj = employeeService.login(employee,session,"",code);
+		logger.info("submitLogin , uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
+		Object obj = employeeService.login(employee,session,code);
 		return obj;
 	}
 
@@ -70,7 +66,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path = "/sendCode", method = RequestMethod.GET)
 	public Object sendCode(HttpServletRequest request) {
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+		logger.info("request sendCode , uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		Object obj = employeeService.sendCode(session);
 		return obj;
 	}
@@ -82,9 +79,9 @@ public class EmployeeController {
 	 * */
 	@ResponseBody
 	@RequestMapping(path = "/submitSMSVerify", method = RequestMethod.POST)
-	public Object submitSMSVerify(
-			@RequestParam("verifyCode") String verifyCode, HttpServletRequest request) {
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+	public Object submitSMSVerify(@RequestParam("verifyCode") String verifyCode,HttpServletRequest request) {
+		logger.info("submitSMSVerify , uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		Object obj = employeeService.verifyCode(verifyCode, session);
 		return obj;
 	}
@@ -95,12 +92,11 @@ public class EmployeeController {
 	 * @param repeatPassword
 	 * @param session
 	 * */
-	@ResponseBody
 	@RequestMapping(path = "/submitSetPassword", method = RequestMethod.POST)
-	public Object submitSetPassword(@RequestParam("password") String password,
-			@RequestParam("repeatPassword") String repeatPassword,
-			HttpServletRequest request) {
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+	public @ResponseBody Object submitSetPassword(@RequestParam("password") String password,
+			@RequestParam("repeatPassword") String repeatPassword,HttpServletRequest request) {
+		logger.info("submitSetPassword , uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		return employeeService.setPassword(password, repeatPassword, session);
 	}
 	
@@ -112,7 +108,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path = "/resetPassword",method=RequestMethod.POST)
 	public Object forgetPassword(@RequestParam("cellphone")String cellphone,HttpServletRequest request){
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+		logger.info("request resetPassword , uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		return employeeService.resetPassword(cellphone, session);
 	}
 	
@@ -123,10 +120,11 @@ public class EmployeeController {
 	@RequestMapping(path="/imageVerifyCode",method=RequestMethod.GET)
 	public void imageVerifyCode(HttpServletResponse response,HttpServletRequest request) 
 			throws IOException{
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		imageVerifyCodeUtil.createCode();
 		String code = imageVerifyCodeUtil.getCode();
 		session.setAttribute("imageVerifyCode", code);
+		logger.info("try to get image verify code , uuid : " + request.getParameter("uuid") + ", code : " + code);
 		imageVerifyCodeUtil.write(response.getOutputStream());
 	}
 	
@@ -136,7 +134,8 @@ public class EmployeeController {
 	 * */
 	@ResponseBody
 	@RequestMapping(path="/getType",method=RequestMethod.GET)
-	public Object getType(){
+	public Object getType(HttpServletRequest request){
+		logger.info("get Employee Type , uuid : " + request.getParameter("uuid"));
 		return employeeService.getEmployeeType();
 	}
 	
@@ -146,7 +145,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getCurrentEmployee",method=RequestMethod.GET)
 	public Object getCurrentEmployee(HttpServletRequest request){
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+		logger.info("get Current Employee, uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		return session.getAttribute("currentEmployee");
 	}
 	
@@ -157,7 +157,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/submitSave",method=RequestMethod.POST)
 	public Object submitSave(@ModelAttribute("employee")Employee employee,HttpServletRequest request){
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+		logger.info("add Employee , uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		return employeeService.save(employee, session);
 	}
 	
@@ -168,7 +169,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getFunctionality",method=RequestMethod.GET)
 	public Object getFunctionality(HttpServletRequest request){
-		HttpSession session = ApplicationUtil.getSessionByIp(request.getRemoteAddr(),request.getServletContext());
+		logger.info("get what employee can do, uuid : " + request.getParameter("uuid"));
+		SimSession session = (SimSession) request.getAttribute(SIM_SESSION);
 		return employeeService.getFunctionality(session);
 	}
 }

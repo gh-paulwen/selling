@@ -1,47 +1,35 @@
 package com.zhklong.selling.util;
 
-import java.util.Map;
-
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 
+/**
+ * @author paul
+ * @since 2016-11-24
+ * 一个处理用户唯一标识的工具类
+ * 
+ * */
 public final class ApplicationUtil {
 
 	private ApplicationUtil() {
 
 	}
 
-	private final static String IP_MAP = "ipSessionMap";
+	private final static String UUID_CONTAINER = "uuidContainer";
 	
-	private final static String SESSION_MAP = "sessionMap";
-
-	public static Map<String, String> getIPMap(ServletContext application) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> map = (Map<String, String>) application.getAttribute(IP_MAP);
+	private static SessionContainer getUuidContainer(ServletContext application){
+		SessionContainer container = (SessionContainer) application.getAttribute(UUID_CONTAINER);
+		return container;
+	}
+	
+	public static SimSession getByUuid(String uuid,ServletContext application){
+		SessionContainer container = getUuidContainer(application);
+		SimSession map = container.get(uuid);
 		return map;
 	}
 	
-	public static Map<String,HttpSession> getSessionMap(ServletContext application){
-		@SuppressWarnings("unchecked")
-		Map<String,HttpSession> map = (Map<String, HttpSession>) application.getAttribute(SESSION_MAP);
-		return map;
-	}
-	
-	public static void linkIPSession(String ip,HttpSession session){
-		ServletContext application = session.getServletContext();
-		@SuppressWarnings("unchecked")
-		Map<String, String> map = (Map<String, String>) application.getAttribute(IP_MAP);
-		map.put(ip, session.getId());
-	}
-	
-	public static HttpSession getSessionByIp(String ip,ServletContext application){
-		Map<String,String> ipMap = getIPMap(application);
-		Map<String,HttpSession> sessionMap = getSessionMap(application);
-		String sessionid = ipMap.get(ip);
-		if(sessionid != null){
-			return sessionMap.get(sessionid);
-		}
-		return null;
+	public static void putIntoContainer(String uuid,SimSession session,ServletContext application){
+		SessionContainer container = getUuidContainer(application);
+		container.put(uuid, session);
 	}
 
 }
