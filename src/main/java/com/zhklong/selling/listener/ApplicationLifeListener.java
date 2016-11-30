@@ -5,7 +5,7 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
-import com.zhklong.selling.util.SessionContainer;
+import com.zhklong.selling.util.MemcachedUtil;
 
 /**
  * @author paul
@@ -17,18 +17,14 @@ public class ApplicationLifeListener implements ServletContextListener{
 
 	private final static Logger logger = Logger.getLogger(ApplicationLifeListener.class.getName());
 	public void contextInitialized(ServletContextEvent sce) {
-		/**
-		 * sessionContainer
-		 * */
-		sce.getServletContext().setAttribute("uuidContainer", new SessionContainer());
-		
-		logger.info("****************************server start****************************");
-		
+		//start memcached
+		MemcachedUtil.start();
+		logger.info("*******server start********");
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
-		sce.getServletContext().removeAttribute("uuidContainer");
-		logger.info("****************************server stop*****************************");
+		MemcachedUtil.stop();
+		logger.info("******server stop*******");
 	}
 
 }

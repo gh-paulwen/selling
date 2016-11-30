@@ -15,7 +15,7 @@ import com.zhklong.selling.mapper.FunctionalityMapper;
 import com.zhklong.selling.service.IEmployeeService;
 import com.zhklong.selling.util.CodeGenerator;
 import com.zhklong.selling.util.SMSUtil;
-import com.zhklong.selling.util.SimSession;
+import com.zhklong.selling.util.Session;
 import com.zhklong.selling.util.ValidateUtil;
 
 /**
@@ -51,7 +51,7 @@ public class EmployeeService implements IEmployeeService {
 		this.smsUtil = smsUtil;
 	}
 
-	public Object login(Employee employee, SimSession session, String code) {
+	public Object login(Employee employee,  Session session, String code) {
 //		ServletContext application = session.getServletContext();
 //		Map<String,String> cellphoneMap = ApplicationUtil.getMap(application, "cellphoneMap");
 //		Map<String,String> imageVerifyCodeMap = ApplicationUtil.getMap(application, "imageVerifyCodeMap");
@@ -110,7 +110,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object sendCode(SimSession session) {
+	public Object sendCode(Session session) {
 		Map<String,Object> json = new HashMap<String, Object>();
 		String code = CodeGenerator.generate();
 		session.setAttribute("verifyCode", code);
@@ -127,7 +127,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object verifyCode(String code, SimSession session) {
+	public Object verifyCode(String code, Session session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		String message = "验证码错误";
 		String sessionCode = (String) session.getAttribute("verifyCode");
@@ -144,7 +144,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object setPassword(String password, String repeatPassword,SimSession session) {
+	public Object setPassword(String password, String repeatPassword, Session session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		
 		if (password == null || repeatPassword == null || password.isEmpty()
@@ -176,7 +176,7 @@ public class EmployeeService implements IEmployeeService {
 		return list;
 	}
 
-	public Object resetPassword(String cellphone, SimSession session) {
+	public Object resetPassword(String cellphone,  Session session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		if (!ValidateUtil.checkCellphone(cellphone)) {
 			logger.info("NOT well formed cellphone , cellphone : " + cellphone);
@@ -207,7 +207,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object save(Employee employee,SimSession session) {
+	public Object save(Employee employee, Session session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 
 		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
@@ -246,7 +246,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object getFunctionality(SimSession session) {
+	public Object getFunctionality( Session session) {
 		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
 		if(curEmp == null)
 			return null;
