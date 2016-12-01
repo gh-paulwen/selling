@@ -52,9 +52,6 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	public Object login(Employee employee,  Session session, String code) {
-//		ServletContext application = session.getServletContext();
-//		Map<String,String> cellphoneMap = ApplicationUtil.getMap(application, "cellphoneMap");
-//		Map<String,String> imageVerifyCodeMap = ApplicationUtil.getMap(application, "imageVerifyCodeMap");
 		Map<String, Object> json = new HashMap<String, Object>();
 		String cellphone = employee.getCellphone();
 		String password = employee.getPassword();
@@ -69,7 +66,6 @@ public class EmployeeService implements IEmployeeService {
 			json.put("message", "非企业注册职工，请联系公司管理员为该手机号注册");
 			return json;
 		}
-//		String sessionCode = imageVerifyCodeMap.get(ip);
 		String sessionCode = (String) session.getAttribute("imageVerifyCode");
 		if (sessionCode == null || !sessionCode.equalsIgnoreCase(code)) {
 			logger.info("wrong verify code");
@@ -153,7 +149,7 @@ public class EmployeeService implements IEmployeeService {
 			json.put("message", "密码不能为空");
 			return json;
 		} 
-		if (!password.trim().endsWith(repeatPassword.trim())) {
+		if (!password.trim().equals(repeatPassword.trim())) {
 			logger.info("different two , one : " + password + ",other : "+repeatPassword);
 			json.put("message","两次输入不一致");
 			return json;
@@ -209,9 +205,7 @@ public class EmployeeService implements IEmployeeService {
 
 	public Object save(Employee employee, Session session) {
 		Map<String, Object> json = new HashMap<String, Object>();
-
 		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
-
 		if (curEmp == null) {
 			logger.info("NO login");
 			json.put("message", "未登录");
@@ -238,7 +232,6 @@ public class EmployeeService implements IEmployeeService {
 			return json;
 		}
 		employee.setCompany(curEmp.getCompany());
-		employee.setStore(curEmp.getStore());
 		employee.setCreateEmployee(curEmp.getId());
 		employeeMapper.insert(employee);
 		json.put("message", "添加成功");
@@ -248,10 +241,51 @@ public class EmployeeService implements IEmployeeService {
 
 	public Object getFunctionality( Session session) {
 		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
-		if(curEmp == null)
+		if(curEmp == null){
+			logger.info("not login");
 			return null;
+		}
 		List<Functionality> list = functionalityMapper.getByEmployee(curEmp.getId());
+		logger.info("functionalitys : " + list.size());
 		return list;
 	}
 
+	public Object checkCell(String cellphone) {
+		Employee emp = employeeMapper.getByCell(cellphone);
+		Map<String,Object> json = new HashMap<String,Object>();
+		if(emp == null){
+			json.put("result", 0);
+		}else {
+			json.put("result", 1);
+		}
+		return json;
+	}
+
+	public Object checkCode(int company, String code) {
+		Employee emp = employeeMapper.getByCodeCompany(code, company);
+		Map<String,Object> json = new HashMap<String,Object>();
+		if(emp == null){
+			json.put("result", 0);
+		}else {
+			json.put("result", 1);
+		}
+		return json;
+	}
+
+	public Object getAll() {
+		return employeeMapper.getAll();
+	}
+
+	public Object getByCompany(Session session) {
+		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
+		Map<String,Object> json = new HashMap<String,Object>();
+		if(curEmp == null){
+			json.put("result", 0);
+			return json;
+		}
+		List<Employee> list = employeeMapper.getByCompany(curEmp.getCompany());
+		json.put("result", 1);
+		json.put("list", list);
+		return json;
+	}
 }

@@ -45,7 +45,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 			Session origin = (Session) MemcachedUtil.get(uuid);
 			if (origin == null) {
 				// 用来代替session域
-				origin = new Session();
+				origin = new Session(uuid);
 				MemcachedUtil.add(uuid, origin);
 			}
 			request.setAttribute("SESSION", origin);
@@ -63,13 +63,16 @@ public class GlobalInterceptor implements HandlerInterceptor {
 	public void afterCompletion(HttpServletRequest request,
 			HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-		Session afterProcess = (Session) request.getAttribute("SESSION");
-		String afteruuid = (String) request.getAttribute("uuid");
-		if(afteruuid == null || afterProcess == null){
-			logger.info("data lost");
-			return;
+		logger.info(request.getMethod());
+		Session session = (Session) request.getAttribute("SESSION");
+		if(session.isChange()){
+			logger.info("change");
+			session.resetChange();
+			MemcachedUtil.replace(session.getKey(), session);
+		}else{
+			logger.info("no change");
 		}
-		MemcachedUtil.cas(afteruuid, afterProcess);
+		
 	}
 
 }

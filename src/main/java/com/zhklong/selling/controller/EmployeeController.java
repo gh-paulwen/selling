@@ -48,7 +48,7 @@ public class EmployeeController {
 	/**
 	 * 登录提交
 	 * @param employee
-	 * @param session 由springmvc 传
+	 * @param code 图片验证码 
 	 * */
 	@ResponseBody
 	@RequestMapping(path = "/submitLogin", method = RequestMethod.POST)
@@ -75,7 +75,7 @@ public class EmployeeController {
 	/**
 	 * 提交验证码
 	 * @param verifyCode 用户提交的验证码
-	 * @param session 包含在发送验证码环节所生成的验证码和用户的手机号码
+	 * @param request 包含在发送验证码环节所生成的验证码和用户的手机号码
 	 * */
 	@ResponseBody
 	@RequestMapping(path = "/submitSMSVerify", method = RequestMethod.POST)
@@ -90,7 +90,7 @@ public class EmployeeController {
 	 * 设置密码提交
 	 * @param password
 	 * @param repeatPassword
-	 * @param session
+	 * 
 	 * */
 	@RequestMapping(path = "/submitSetPassword", method = RequestMethod.POST)
 	public @ResponseBody Object submitSetPassword(@RequestParam("password") String password,
@@ -103,7 +103,7 @@ public class EmployeeController {
 	/**
 	 * 请求重置密码 
 	 * @param cellphone
-	 * @param session
+	 * 
 	 * */
 	@ResponseBody
 	@RequestMapping(path = "/resetPassword",method=RequestMethod.POST)
@@ -152,7 +152,7 @@ public class EmployeeController {
 	
 	/**
 	 * 添加职员
-	 * @param employee
+	 * 
 	 * */
 	@ResponseBody
 	@RequestMapping(path="/submitSave",method=RequestMethod.POST)
@@ -164,7 +164,7 @@ public class EmployeeController {
 	
 	/**
 	 * 得到职员对应的权限
-	 * @param session
+	 * 
 	 * */
 	@ResponseBody
 	@RequestMapping(path="/getFunctionality",method=RequestMethod.GET)
@@ -172,5 +172,52 @@ public class EmployeeController {
 		logger.info("get what employee can do, uuid : " + request.getAttribute("uuid"));
 		Session session =  (Session) request.getAttribute(SESSION);
 		return employeeService.getFunctionality(session);
+	}
+	
+	/**
+	 * 查询手机号码是否已经存在
+	 * @param cellphone
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/checkCell",method=RequestMethod.GET)
+	public Object checkCell(@RequestParam("cellphone") String cellphone){
+		logger.info("cellphone : " + cellphone);
+		return employeeService.checkCell(cellphone);
+	}
+	
+	/**
+	 * 查询工号在一个公司是否已存在
+	 * @param code
+	 * @param company
+	 * 
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/checkCode",method=RequestMethod.GET)
+	public Object checkCode(@RequestParam("company")int company,@RequestParam("code") String code){
+		logger.info("code : " + code + ", company : " + company);
+		return employeeService.checkCode(company, code);
+	}
+	
+	/**
+	 * 得到所有职员
+	 * 
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/getAll",method=RequestMethod.GET)
+	public Object getAll(){
+		logger.info("");
+		return employeeService.getAll();
+	}
+	
+	/**
+	 * 得到当前员工所在公司的所有职员
+	 * @param request 用来得到session 
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/getByCompany",method=RequestMethod.GET)
+	public Object getByCompany(HttpServletRequest request){
+		Session session = (Session) request.getAttribute(SESSION);
+		logger.info("uuid : " + request.getAttribute("uuid"));
+		return employeeService.getByCompany(session);
 	}
 }

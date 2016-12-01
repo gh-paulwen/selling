@@ -13,12 +13,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     update employee set code=#{code},name=#{name},type=#{type},cellphone=#{cellphone},status=#{status},deleted=#{deleted},password=#{password},description=#{description},passwordstatus=#{passwordstatus} where id=#{id}
   </update>
   
+  <select id="getById" resultType="Employee">
+  	select * from employee where id = #{0}
+  </select>
+  
   <select id="getByCell" resultType="Employee">
     select * from employee where cellphone=#{0}
   </select>
   
   <select id="getByCodeCompany" resultType="Employee">
     select * from employee where code=#{0} and company=#{1}
+  </select>
+  
+  <select id="getAll" resultType="Employee">
+    select * from employee
+  </select>
+  
+  <select id="getByCompany" resultType="Employee">
+  	select * from employee where company = #{0}
   </select>
 
 </mapper>

@@ -5,9 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.zhklong.selling.mapper.FunctionalityMapper">
   <select id="getByEmployee" resultType="Functionality">
-    select * from functionality where id in
-    (select func from role_func where role = 
-    (select type from employee where id = #{0}))
+    select * from functionality where id in (select func from role_func where role = (select type from employee where id = #{0}))
   </select>
 
 </mapper>

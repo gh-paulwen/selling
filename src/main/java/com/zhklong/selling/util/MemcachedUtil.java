@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
 
-import net.spy.memcached.CASValue;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
 
@@ -38,7 +37,10 @@ public final class MemcachedUtil {
 	}
 	
 	public static boolean add(String key,Object obj){
-		boolean res = false; 
+		boolean res = false;
+		if(key.length() > 32){
+			key = key.substring(0, 32);
+		}
 		try {
 			OperationFuture<Boolean> future = mmc.add(key, EXPTIME, obj);
 			res = future.get();
@@ -55,10 +57,9 @@ public final class MemcachedUtil {
 		return mmc.get(key);
 	}
 	
-	public static void cas(String key ,Object obj){
-		CASValue<Object> casValue = mmc.gets(key);
-		mmc.cas(key, casValue.getCas(), obj);
-		logger.info("cas , key : " + key);
+	public static void replace(String key ,Object obj){
+		mmc.replace(key,EXPTIME,obj);
+		logger.info("replace , key : " + key);
 	}
 
 }

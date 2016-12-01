@@ -1,6 +1,10 @@
 package com.zhklong.selling.entity;
 
-public class Functionality {
+import java.io.Serializable;
+
+public class Functionality implements Serializable{
+
+	private static final long serialVersionUID = 377021557737364816L;
 
 	private int id;
 

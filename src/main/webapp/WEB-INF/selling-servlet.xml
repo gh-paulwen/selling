@@ -58,6 +58,7 @@
 		<property name="maxInMemorySize" value="4096" />
 	</bean>
 	
+	<!-- 拦截器 -->
 	<mvc:interceptors>
 	  <bean class="com.zhklong.selling.interceptor.GlobalInterceptor"></bean>
 	</mvc:interceptors>
@@ -76,6 +77,19 @@
 		<property name="mapperInterface" value="com.zhklong.selling.mapper.FunctionalityMapper" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="companyMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.zhklong.selling.mapper.CompanyMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="storeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.zhklong.selling.mapper.StoreMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="companyTypeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.zhklong.selling.mapper.CompanyTypeMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
 	
 	<!-- Util -->
 	<bean id="smsUtil" class="com.zhklong.selling.util.SMSUtil">
@@ -93,11 +107,24 @@
 		<property name="functionalityMapper" ref="functionalityMapper"/>
 		<property name="smsUtil" ref="smsUtil"/>
 	</bean>
+	<bean id="storeService" class="com.zhklong.selling.service.impl.StoreService">
+		<property name="storeMapper" ref="storeMapper"/>
+	</bean>
+	<bean id="companyService" class="com.zhklong.selling.service.impl.CompanyService">
+		<property name="companyMapper" ref="companyMapper"/>
+		<property name="companyTypeMapper" ref="companyTypeMapper"/>
+	</bean>
 
 	<!-- Controller -->
 	<bean id="employeeController" class="com.zhklong.selling.controller.EmployeeController">
 		<property name="employeeService" ref="employeeService" />
 		<property name="imageVerifyCodeUtil" ref="imageVerifyCodeUtil"/>
+	</bean>
+	<bean id="storeController" class="com.zhklong.selling.controller.StoreController">
+		<property name="storeService" ref="storeService"/>
+	</bean>
+	<bean id="companyController" class="com.zhklong.selling.controller.CompanyController">
+		<property name="companyService" ref="companyService"/>
 	</bean>
 
 

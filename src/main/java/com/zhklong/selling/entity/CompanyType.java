@@ -2,9 +2,9 @@ package com.zhklong.selling.entity;
 
 import java.io.Serializable;
 
-public class EmployeeType implements Serializable{
-
-	private static final long serialVersionUID = -1657561900872733522L;
+public class CompanyType implements Serializable{
+	
+	private static final long serialVersionUID = -1054180915011758771L;
 
 	private char code;
 
@@ -25,12 +25,5 @@ public class EmployeeType implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	@Override
-	public String toString() {
-		return "EmployeeType [code=" + code + ", name=" + name + "]";
-	}
-	
-	
 
 }

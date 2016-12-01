@@ -93,5 +93,29 @@ public interface IEmployeeService {
 	 * @return 权限列表
 	 * */
 	Object getFunctionality(Session session);
-
+	
+	/**
+	 * 查询手机号是否存在
+	 * @param cellphone
+	 * */
+	Object checkCell(String cellphone);
+	
+	/**
+	 * 查询公司中是否已经存在工号
+	 * @param company
+	 * @param code
+	 * 
+	 * */
+	Object checkCode(int company,String code);
+	
+	/**
+	 * 得到所有的职员
+	 * */
+	Object getAll();
+	
+	/**
+	 * 得到当前用户所在公司的所有职员
+	 * @param session 用以获取当前用户
+	 * */
+	Object getByCompany(Session session);
 }

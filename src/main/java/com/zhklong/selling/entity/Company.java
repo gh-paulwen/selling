@@ -1,8 +1,12 @@
 package com.zhklong.selling.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Company {
+public class Company implements Serializable{
+	
+	private static final long serialVersionUID = -5942167551100492911L;
+
 	private int id;
 	
 	private String cellphone;
