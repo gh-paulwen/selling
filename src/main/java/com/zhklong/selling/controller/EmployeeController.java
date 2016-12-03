@@ -29,8 +29,6 @@ import com.zhklong.selling.util.Session;
 @RequestMapping(path = "/employee")
 public class EmployeeController {
 	
-	private static final String SESSION = "SESSION";
-	
 	private static final Logger logger = Logger.getLogger(EmployeeController.class.getName());
 
 	private IEmployeeService employeeService;
@@ -55,7 +53,7 @@ public class EmployeeController {
 	public Object submitLogin(@ModelAttribute("employee") Employee employee,@RequestParam("verifyCode")String code,HttpServletRequest request)
 			throws IOException {
 		logger.info("submitLogin , uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		Object obj = employeeService.login(employee,session,code);
 		return obj;
 	}
@@ -67,7 +65,7 @@ public class EmployeeController {
 	@RequestMapping(path = "/sendCode", method = RequestMethod.GET)
 	public Object sendCode(HttpServletRequest request) {
 		logger.info("request sendCode , uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		Object obj = employeeService.sendCode(session);
 		return obj;
 	}
@@ -81,7 +79,7 @@ public class EmployeeController {
 	@RequestMapping(path = "/submitSMSVerify", method = RequestMethod.POST)
 	public Object submitSMSVerify(@RequestParam("verifyCode") String verifyCode,HttpServletRequest request) {
 		logger.info("submitSMSVerify , uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		Object obj = employeeService.verifyCode(verifyCode, session);
 		return obj;
 	}
@@ -96,7 +94,7 @@ public class EmployeeController {
 	public @ResponseBody Object submitSetPassword(@RequestParam("password") String password,
 			@RequestParam("repeatPassword") String repeatPassword,HttpServletRequest request) {
 		logger.info("submitSetPassword , uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		return employeeService.setPassword(password, repeatPassword, session);
 	}
 	
@@ -109,7 +107,7 @@ public class EmployeeController {
 	@RequestMapping(path = "/resetPassword",method=RequestMethod.POST)
 	public Object forgetPassword(@RequestParam("cellphone")String cellphone,HttpServletRequest request){
 		logger.info("request resetPassword , uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		return employeeService.resetPassword(cellphone, session);
 	}
 	
@@ -120,7 +118,7 @@ public class EmployeeController {
 	@RequestMapping(path="/imageVerifyCode",method=RequestMethod.GET)
 	public void imageVerifyCode(HttpServletResponse response,HttpServletRequest request) 
 			throws IOException{
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		imageVerifyCodeUtil.createCode();
 		String code = imageVerifyCodeUtil.getCode();
 		session.setAttribute("imageVerifyCode", code);
@@ -146,7 +144,7 @@ public class EmployeeController {
 	@RequestMapping(path="/getCurrentEmployee",method=RequestMethod.GET)
 	public Object getCurrentEmployee(HttpServletRequest request){
 		logger.info("get Current Employee, uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		return session.getAttribute("currentEmployee");
 	}
 	
@@ -158,7 +156,7 @@ public class EmployeeController {
 	@RequestMapping(path="/submitSave",method=RequestMethod.POST)
 	public Object submitSave(@ModelAttribute("employee")Employee employee,HttpServletRequest request){
 		logger.info("add Employee , uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		return employeeService.save(employee, session);
 	}
 	
@@ -170,7 +168,7 @@ public class EmployeeController {
 	@RequestMapping(path="/getFunctionality",method=RequestMethod.GET)
 	public Object getFunctionality(HttpServletRequest request){
 		logger.info("get what employee can do, uuid : " + request.getAttribute("uuid"));
-		Session session =  (Session) request.getAttribute(SESSION);
+		Session session =  (Session) request.getAttribute(Session._ATTRIBUTE);
 		return employeeService.getFunctionality(session);
 	}
 	
@@ -216,8 +214,38 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getByCompany",method=RequestMethod.GET)
 	public Object getByCompany(HttpServletRequest request){
-		Session session = (Session) request.getAttribute(SESSION);
+		Session session = (Session) request.getAttribute(Session._ATTRIBUTE);
 		logger.info("uuid : " + request.getAttribute("uuid"));
 		return employeeService.getByCompany(session);
+	}
+	
+	/**
+	 * 删除职员
+	 * @param id
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/delete",method=RequestMethod.GET)
+	public Object delete(@RequestParam("id") int id){
+		return employeeService.delete(id);
+	}
+	
+	/**
+	 * 得到职员详细信息
+	 * @param id
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/detail",method=RequestMethod.GET)
+	public Object detail(@RequestParam("id") int id){
+		return employeeService.detail(id);
+	}
+	
+	/**
+	 * 修改职员资料
+	 * @param employee
+	 * */
+	@ResponseBody
+	@RequestMapping(path="/update",method=RequestMethod.POST)
+	public Object update(@ModelAttribute("employee") Employee employee){
+		return employeeService.update(employee);
 	}
 }

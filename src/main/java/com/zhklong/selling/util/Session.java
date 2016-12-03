@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Session implements Serializable{
+	
+	public static final String _ATTRIBUTE = "_session";
+	
 	private static final long serialVersionUID = 3972290815770859806L;
 	
 	private boolean change = false;

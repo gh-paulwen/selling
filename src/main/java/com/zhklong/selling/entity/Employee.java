@@ -6,7 +6,21 @@ import java.util.Date;
 public class Employee implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
-
+	
+	public static final String CURRENT_EMPLOYEE = "currentEmployee";
+	
+	//type constants
+	public static final char TYPE_SYSADMIN = 'a';
+	
+	public static final char TYPE_COMADMIN = '0';
+	
+	public static final char TYPE_STOREADMIN = '1';
+	
+	public static final char TYPE_STORAGEADMIN = '3';
+	
+	public static final char TYPE_SALESMAN = '2';
+	
+	
 	private int id;
 	
 	private String code;

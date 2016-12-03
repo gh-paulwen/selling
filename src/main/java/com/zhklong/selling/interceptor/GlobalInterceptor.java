@@ -14,6 +14,12 @@ import com.google.gson.Gson;
 import com.zhklong.selling.util.MemcachedUtil;
 import com.zhklong.selling.util.Session;
 
+/**
+ * 控制跨域，缓存session等
+ * @author paul
+ * @since 2016-12-03
+ * 
+ * */
 public class GlobalInterceptor implements HandlerInterceptor {
 	
 	private static final Logger logger = Logger.getLogger(GlobalInterceptor.class
@@ -48,7 +54,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 				origin = new Session(uuid);
 				MemcachedUtil.add(uuid, origin);
 			}
-			request.setAttribute("SESSION", origin);
+			request.setAttribute(Session._ATTRIBUTE, origin);
 			request.setAttribute("uuid", uuid);
 			return true;
 		}
@@ -64,7 +70,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 			HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
 		logger.info(request.getMethod());
-		Session session = (Session) request.getAttribute("SESSION");
+		Session session = (Session) request.getAttribute(Session._ATTRIBUTE);
 		if(session.isChange()){
 			logger.info("change");
 			session.resetChange();

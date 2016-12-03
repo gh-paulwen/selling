@@ -11,11 +11,6 @@ import com.zhklong.selling.util.Session;
 public interface IEmployeeService {
 
 	/**
-	 * 用来保存存在于session中当前职员的key
-	 * */
-	String CURRENT_EMPLOYEE = "currentEmployee";
-
-	/**
 	 * 提供给用户（职工）登录的功能
 	 * 
 	 * @param employee
@@ -118,4 +113,23 @@ public interface IEmployeeService {
 	 * @param session 用以获取当前用户
 	 * */
 	Object getByCompany(Session session);
+	
+	/**
+	 * 删除职员
+	 * @param id
+	 * 
+	 * */
+	Object delete(int id);
+	
+	/**
+	 * 修改职员
+	 * @param employee
+	 * */
+	Object update(Employee employee);
+	
+	/**
+	 * 得到职员详细信息
+	 * @param id
+	 * */
+	Object detail(int id);
 }

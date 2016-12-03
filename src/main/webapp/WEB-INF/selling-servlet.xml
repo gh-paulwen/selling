@@ -60,7 +60,35 @@
 	
 	<!-- 拦截器 -->
 	<mvc:interceptors>
-	  <bean class="com.zhklong.selling.interceptor.GlobalInterceptor"></bean>
+	  <bean class="com.zhklong.selling.interceptor.GlobalInterceptor"/>
+	  
+	  <!--  
+	  <mvc:interceptor>
+	  	<mvc:mapping path="/employee/getAll"/>
+	  	<bean class="com.zhklong.selling.interceptor.SystemAdminInterceptor"/>
+	  </mvc:interceptor>
+	  <mvc:interceptor>
+	  	<mvc:mapping path="com.zhklong.selling.interceptor.CompanyAdminInterceptor"/>
+	  	<bean class=""/>
+	  </mvc:interceptor>
+	  <mvc:interceptor>
+	  	<mvc:mapping path="com.zhklong.selling.interceptor.StoreAdminInterceptor"/>
+	  	<bean class=""/>
+	  </mvc:interceptor>
+	  <mvc:interceptor>
+	  	<mvc:mapping path="com.zhklong.selling.interceptor.StorageAdminInterceptor"/>
+	  	<bean class=""/>
+	  </mvc:interceptor>
+	  <mvc:interceptor>
+	  	<mvc:mapping path="com.zhklong.selling.interceptor.SalesmanInterceptor"/>
+	  	<bean class=""/>
+	  </mvc:interceptor>
+	  <mvc:interceptor>
+	  	<mvc:mapping path="/employee/getAll"/>
+	  	<bean class="com.zhklong.selling.interceptor.LastInterceptor"/>
+	  </mvc:interceptor>
+	  
+	  -->
 	</mvc:interceptors>
 	
 

@@ -99,7 +99,7 @@ public class EmployeeService implements IEmployeeService {
 			json.put("message", "密码错误");
 			return json;
 		}
-		session.setAttribute(CURRENT_EMPLOYEE, employee);
+		session.setAttribute(Employee.CURRENT_EMPLOYEE, employee);
 		logger.info("success , cellphone : " + cellphone + ", employee name :" + employee.getName());
 		json.put("message", "登录成功");
 		json.put("redirect", 2);
@@ -205,7 +205,7 @@ public class EmployeeService implements IEmployeeService {
 
 	public Object save(Employee employee, Session session) {
 		Map<String, Object> json = new HashMap<String, Object>();
-		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
+		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
 		if (curEmp == null) {
 			logger.info("NO login");
 			json.put("message", "未登录");
@@ -240,7 +240,7 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	public Object getFunctionality( Session session) {
-		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
+		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
 		if(curEmp == null){
 			logger.info("not login");
 			return null;
@@ -277,7 +277,7 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	public Object getByCompany(Session session) {
-		Employee curEmp = (Employee) session.getAttribute(CURRENT_EMPLOYEE);
+		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
 		Map<String,Object> json = new HashMap<String,Object>();
 		if(curEmp == null){
 			json.put("result", 0);
@@ -287,5 +287,40 @@ public class EmployeeService implements IEmployeeService {
 		json.put("result", 1);
 		json.put("list", list);
 		return json;
+	}
+
+	public Object delete(int id) {
+		Map<String,Object> json = new HashMap<String,Object>();
+		Employee emp = employeeMapper.getById(id);
+		if(emp == null){
+			json.put("message", "职员不存在");
+			json.put("result", 0);
+			return json;
+		}
+		emp.setDeleted('1');
+		employeeMapper.update(emp);
+		json.put("message", "删除成功");
+		json.put("result", 1);
+		logger.info("delete emp , id : " + emp.getId() + " , name : " + emp.getName());
+		return json;
+	}
+
+	public Object update(Employee employee) {
+		Map<String,Object> json = new HashMap<String,Object>();
+		Employee emp = employeeMapper.getById(employee.getId());
+		if(emp == null){
+			json.put("message", "职员不存在");
+			json.put("result", 0);
+			return json;
+		}
+		employeeMapper.update(employee);
+		json.put("message", "修改成功");
+		json.put("result", 1);
+		logger.info("update emp , id : " + employee.getId());
+		return json;
+	}
+
+	public Object detail(int id) {
+		return employeeMapper.getById(id);
 	}
 }
