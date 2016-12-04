@@ -1,6 +1,7 @@
 package com.zhklong.selling.service;
 
 import com.zhklong.selling.entity.Company;
+import com.zhklong.selling.util.Session;
 
 /**
  * @author paul
@@ -18,7 +19,8 @@ public interface ICompanyService {
 	
 	/**
 	 * 添加公司
-	 * 
+	 * @param company 
+	 * @param session 得到当前employee
 	 * */
-	Object save(Company company);
+	Object save(Company company,Session session);
 }

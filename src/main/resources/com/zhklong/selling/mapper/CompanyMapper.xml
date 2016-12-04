@@ -6,6 +6,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.zhklong.selling.mapper.CompanyMapper">
   <insert id="insert" parameterType="Company">
     insert into company(cellphone,name,region,address,reviser,reviseTime,description,type) 
-    values (#{cellphone},#{name},#{region},#{address},#{reviser},#{reviseTime},#{description},#{type})
+    values (#{cellphone},#{name},#{region},#{address},#{reviser},now(),#{description},#{type})
   </insert>
 </mapper>

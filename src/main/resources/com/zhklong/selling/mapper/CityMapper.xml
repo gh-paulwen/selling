@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhklong.selling.mapper.CityMapper">
+	<select id="getProvince" resultType="City">
+		select * from city where superCity is NULL
+	</select>
+	
+	<select id="getByProvince" resultType="City">
+		select * from city where superCity = #{0}
+	</select>
+</mapper>

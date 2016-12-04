@@ -117,6 +117,10 @@
 		<property name="mapperInterface" value="com.zhklong.selling.mapper.CompanyTypeMapper" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="cityMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.zhklong.selling.mapper.CityMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 	
 	
 	<!-- Util -->
@@ -142,6 +146,9 @@
 		<property name="companyMapper" ref="companyMapper"/>
 		<property name="companyTypeMapper" ref="companyTypeMapper"/>
 	</bean>
+	<bean id="cityService" class="com.zhklong.selling.service.impl.CityService">
+		<property name="cityMapper" ref="cityMapper"/>
+	</bean>
 
 	<!-- Controller -->
 	<bean id="employeeController" class="com.zhklong.selling.controller.EmployeeController">
@@ -153,6 +160,9 @@
 	</bean>
 	<bean id="companyController" class="com.zhklong.selling.controller.CompanyController">
 		<property name="companyService" ref="companyService"/>
+	</bean>
+	<bean id="cityController" class="com.zhklong.selling.controller.CityController">
+		<property name="cityService" ref="cityService"/>
 	</bean>
 
 
