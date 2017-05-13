@@ -2,9 +2,9 @@ package com.zhklong.selling.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.zhklong.selling.entity.Employee;
-import com.zhklong.selling.util.Session;
 
 /**
  * 销售人员拦截器
@@ -18,7 +18,7 @@ public class SalesmanInterceptor extends BaseInterceptor{
 			HttpServletResponse response, Object handler) throws Exception {
 		if(allow)
 			return true;
-		Session session = (Session) request.getAttribute(Session._ATTRIBUTE);
+		HttpSession session = request.getSession();
 		if(session == null){
 			request.getRequestDispatcher("/input.jsp").forward(request, response);
 			return false;

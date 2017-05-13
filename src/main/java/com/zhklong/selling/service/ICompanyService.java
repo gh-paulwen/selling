@@ -1,7 +1,8 @@
 package com.zhklong.selling.service;
 
+import javax.servlet.http.HttpSession;
+
 import com.zhklong.selling.entity.Company;
-import com.zhklong.selling.util.Session;
 
 /**
  * @author paul
@@ -22,5 +23,5 @@ public interface ICompanyService {
 	 * @param company 
 	 * @param session 得到当前employee
 	 * */
-	Object save(Company company,Session session);
+	Object save(Company company,HttpSession session);
 }

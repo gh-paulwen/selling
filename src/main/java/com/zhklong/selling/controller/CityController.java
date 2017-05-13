@@ -1,9 +1,11 @@
 package com.zhklong.selling.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.zhklong.selling.service.ICityService;
 
 /**
@@ -16,11 +18,8 @@ import com.zhklong.selling.service.ICityService;
 @RequestMapping("/city")
 public class CityController {
 	
+	@Autowired
 	private ICityService cityService;
-	
-	public void setCityService(ICityService cityService) {
-		this.cityService = cityService;
-	}
 	
 	@RequestMapping(path="/province",method=RequestMethod.GET)
 	public Object getProvice(){

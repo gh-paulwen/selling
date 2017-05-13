@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.zhklong.selling.entity.Employee;
 import com.zhklong.selling.entity.EmployeeType;
@@ -15,7 +19,6 @@ import com.zhklong.selling.mapper.FunctionalityMapper;
 import com.zhklong.selling.service.IEmployeeService;
 import com.zhklong.selling.util.CodeGenerator;
 import com.zhklong.selling.util.SMSUtil;
-import com.zhklong.selling.util.Session;
 import com.zhklong.selling.util.ValidateUtil;
 
 /**
@@ -23,35 +26,24 @@ import com.zhklong.selling.util.ValidateUtil;
  * @since 2016-11-16 职工服务类
  * 
  * */
+@Service
 public class EmployeeService implements IEmployeeService {
+	
+	private static final Logger logger = Logger.getLogger(EmployeeService.class.getName());
 
+	@Autowired
 	private EmployeeMapper employeeMapper;
 
+	@Autowired
 	private EmployeeTypeMapper employeeTypeMapper;
 	
+	@Autowired
 	private FunctionalityMapper functionalityMapper;
 
+	@Autowired
 	private SMSUtil smsUtil;
 	
-	private static final Logger logger = Logger.getLogger(EmployeeService.class.getName()); 
-
-	public void setEmployeeMapper(EmployeeMapper employeeMapper) {
-		this.employeeMapper = employeeMapper;
-	}
-
-	public void setEmployeeTypeMapper(EmployeeTypeMapper employeeTypeMapper) {
-		this.employeeTypeMapper = employeeTypeMapper;
-	}
-	
-	public void setFunctionalityMapper(FunctionalityMapper functionalityMapper) {
-		this.functionalityMapper = functionalityMapper;
-	}
-
-	public void setSmsUtil(SMSUtil smsUtil) {
-		this.smsUtil = smsUtil;
-	}
-
-	public Object login(Employee employee,  Session session, String code) {
+	public Object login(Employee employee,  HttpSession session, String code) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		String cellphone = employee.getCellphone();
 		String password = employee.getPassword();
@@ -106,7 +98,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object sendCode(Session session) {
+	public Object sendCode(HttpSession session) {
 		Map<String,Object> json = new HashMap<String, Object>();
 		String code = CodeGenerator.generate();
 		session.setAttribute("verifyCode", code);
@@ -123,7 +115,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object verifyCode(String code, Session session) {
+	public Object verifyCode(String code, HttpSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		String message = "验证码错误";
 		String sessionCode = (String) session.getAttribute("verifyCode");
@@ -140,7 +132,7 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object setPassword(String password, String repeatPassword, Session session) {
+	public Object setPassword(String password, String repeatPassword, HttpSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		
 		if (password == null || repeatPassword == null || password.isEmpty()
@@ -172,7 +164,7 @@ public class EmployeeService implements IEmployeeService {
 		return list;
 	}
 
-	public Object resetPassword(String cellphone,  Session session) {
+	public Object resetPassword(String cellphone,  HttpSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		if (!ValidateUtil.checkCellphone(cellphone)) {
 			logger.info("NOT well formed cellphone , cellphone : " + cellphone);
@@ -203,14 +195,14 @@ public class EmployeeService implements IEmployeeService {
 		return json;
 	}
 
-	public Object save(Employee employee, Session session) {
+	public Object save(Employee employee, HttpSession session) {
 		Map<String, Object> json = new HashMap<String, Object>();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if (curEmp == null) {
-			logger.info("NO login");
-			json.put("message", "未登录");
-			return json;
-		}
+//		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
+//		if (curEmp == null) {
+//			logger.info("NO login");
+//			json.put("message", "未登录");
+//			return json;
+//		}
 		if (employee.getCode() == null || employee.getCode().isEmpty()) {
 			logger.info("EMPTY employee code");
 			json.put("message", "员工编号不能为空");
@@ -231,15 +223,15 @@ public class EmployeeService implements IEmployeeService {
 			json.put("message", "不是有效的手机号码");
 			return json;
 		}
-		employee.setCompany(curEmp.getCompany());
-		employee.setCreateEmployee(curEmp.getId());
+//		employee.setCompany(curEmp.getCompany());
+//		employee.setCreateEmployee(curEmp.getId());
 		employeeMapper.insert(employee);
 		json.put("message", "添加成功");
 		logger.info("SUCCEEDED");
 		return json;
 	}
 
-	public Object getFunctionality( Session session) {
+	public Object getFunctionality( HttpSession session) {
 		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
 		if(curEmp == null){
 			logger.info("not login");
@@ -276,7 +268,7 @@ public class EmployeeService implements IEmployeeService {
 		return employeeMapper.getAll();
 	}
 
-	public Object getByCompany(Session session) {
+	public Object getByCompany(HttpSession session) {
 		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
 		Map<String,Object> json = new HashMap<String,Object>();
 		if(curEmp == null){

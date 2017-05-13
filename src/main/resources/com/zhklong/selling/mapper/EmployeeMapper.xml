@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.zhklong.selling.mapper.EmployeeMapper">
 
   <insert id="insert" parameterType="Employee">
-    insert into employee (code,name,cellphone,company,store,createTime,type,description,createEmployee) values (#{code},#{name},#{cellphone},#{company},#{store},now(),#{type},#{description},#{createEmployee})
+    insert into employee (code,name,cellphone,company,store,createTime,type,description,createEmployee) values (#{code},#{name},#{cellphone},NULL,NULL,now(),NULL,#{description},NULL)
   </insert>
   
   <update id="update" parameterType="Employee">

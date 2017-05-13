@@ -1,7 +1,8 @@
 package com.zhklong.selling.service;
 
+import javax.servlet.http.HttpSession;
+
 import com.zhklong.selling.entity.Employee;
-import com.zhklong.selling.util.Session;
 
 /**
  * @author paul
@@ -20,7 +21,7 @@ public interface IEmployeeService {
 	 * @return json
 	 * 
 	 * */
-	Object login(Employee employee, Session session, String code);
+	Object login(Employee employee, HttpSession session, String code);
 
 	/**
 	 * 发送验证码
@@ -29,7 +30,7 @@ public interface IEmployeeService {
 	 *            用来获取用户的手机号码，以及保存生成的验证码
 	 * @return json
 	 * */
-	Object sendCode( Session session);
+	Object sendCode( HttpSession session);
 
 	/**
 	 * 验证用户输入的验证码
@@ -40,7 +41,7 @@ public interface IEmployeeService {
 	 *            得到之前生成的验证码
 	 * @return json
 	 * */
-	Object verifyCode(String code,  Session session);
+	Object verifyCode(String code,  HttpSession session);
 
 	/**
 	 * 设置密码
@@ -51,8 +52,7 @@ public interface IEmployeeService {
 	 *            获取用户的cellphone
 	 * @return json
 	 * */
-	Object setPassword(String password, String repeatPassword,
-			 Session session);
+	Object setPassword(String password, String repeatPassword,HttpSession session);
 
 	/**
 	 * 获取职员类型
@@ -67,7 +67,7 @@ public interface IEmployeeService {
 	 * 
 	 * @param cellphone
 	 * */
-	Object resetPassword(String cellphone,  Session session);
+	Object resetPassword(String cellphone,  HttpSession session);
 
 	/**
 	 * 添加职员
@@ -78,7 +78,7 @@ public interface IEmployeeService {
 	 *            用于获取当前用户的信息
 	 * 
 	 * */
-	Object save(Employee employee, Session session);
+	Object save(Employee employee, HttpSession session);
 
 	/**
 	 * 用职员id得到该只要所有的权限
@@ -87,7 +87,7 @@ public interface IEmployeeService {
 	 *            职员id在session中
 	 * @return 权限列表
 	 * */
-	Object getFunctionality(Session session);
+	Object getFunctionality(HttpSession session);
 	
 	/**
 	 * 查询手机号是否存在
@@ -112,7 +112,7 @@ public interface IEmployeeService {
 	 * 得到当前用户所在公司的所有职员
 	 * @param session 用以获取当前用户
 	 * */
-	Object getByCompany(Session session);
+	Object getByCompany(HttpSession session);
 	
 	/**
 	 * 删除职员

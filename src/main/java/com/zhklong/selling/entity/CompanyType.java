@@ -5,11 +5,11 @@ import java.io.Serializable;
 public class CompanyType implements Serializable{
 	
 	private static final long serialVersionUID = -1054180915011758771L;
-
+	
 	private char code;
 
 	private String name;
-
+	
 	public char getCode() {
 		return code;
 	}
