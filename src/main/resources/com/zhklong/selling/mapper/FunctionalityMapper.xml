@@ -4,8 +4,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.zhklong.selling.mapper.FunctionalityMapper">
-  <select id="getByEmployee" resultType="Functionality">
-    select * from functionality where id in (select func from role_func where role = (select type from employee where id = #{0}))
-  </select>
+	<select id="getByEmployee" resultType="Functionality">
+		select * from functionality where id in (select funcid from role_func where
+		roleid in (select roleid from employee_role where empid = #{0}))
+	</select>
+	
+	<select id="getByRole" resultType="Functionality">
+	   select * from functionality where id in (select funcid from role_func where roleid=#{0})
+	</select>
+	
+	<select id="getNotInRole" resultType="Functionality">
+	   select * from functionality where id not in (select funcid from role_func where roleid=#{0})
+	</select>
+	
+	<select id="getByUrl" resultType="Functionality">
+	   select * from functionality where id in (select functionality from functionality_url where url=#{0})
+	</select>
+
+	<insert id="addFunctionality2Role">
+        insert into role_func (roleid,funcid) values (#{0},#{1})
+	</insert>
+	
+	<delete id="removeFunctionalityFromRole">
+	   delete from role_func where roleid=#{0} and funcid=#{1}
+	</delete>
 
 </mapper>

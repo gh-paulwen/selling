@@ -2,6 +2,7 @@ package com.zhklong.selling.service;
 
 import javax.servlet.http.HttpSession;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.entity.Employee;
 
 /**
@@ -21,7 +22,7 @@ public interface IEmployeeService {
 	 * @return json
 	 * 
 	 * */
-	Object login(Employee employee, HttpSession session, String code);
+	DomainTransfer login(Employee employee, HttpSession session, String code);
 
 	/**
 	 * 发送验证码
@@ -30,7 +31,7 @@ public interface IEmployeeService {
 	 *            用来获取用户的手机号码，以及保存生成的验证码
 	 * @return json
 	 * */
-	Object sendCode( HttpSession session);
+	DomainTransfer sendCode( HttpSession session);
 
 	/**
 	 * 验证用户输入的验证码
@@ -41,7 +42,7 @@ public interface IEmployeeService {
 	 *            得到之前生成的验证码
 	 * @return json
 	 * */
-	Object verifyCode(String code,  HttpSession session);
+	DomainTransfer verifyCode(String code,  HttpSession session);
 
 	/**
 	 * 设置密码
@@ -52,7 +53,7 @@ public interface IEmployeeService {
 	 *            获取用户的cellphone
 	 * @return json
 	 * */
-	Object setPassword(String password, String repeatPassword,HttpSession session);
+	DomainTransfer setPassword(String password, String repeatPassword,HttpSession session);
 
 	/**
 	 * 获取职员类型
@@ -60,14 +61,14 @@ public interface IEmployeeService {
 	 * @return json
 	 * 
 	 * */
-	Object getEmployeeType();
+	DomainTransfer getEmployeeType();
 
 	/**
 	 * 重置密码申请
 	 * 
 	 * @param cellphone
 	 * */
-	Object resetPassword(String cellphone,  HttpSession session);
+	DomainTransfer resetPassword(String cellphone,  HttpSession session);
 
 	/**
 	 * 添加职员
@@ -78,7 +79,7 @@ public interface IEmployeeService {
 	 *            用于获取当前用户的信息
 	 * 
 	 * */
-	Object save(Employee employee, HttpSession session);
+	DomainTransfer save(Employee employee, HttpSession session);
 
 	/**
 	 * 用职员id得到该只要所有的权限
@@ -87,13 +88,13 @@ public interface IEmployeeService {
 	 *            职员id在session中
 	 * @return 权限列表
 	 * */
-	Object getFunctionality(HttpSession session);
+	DomainTransfer getFunctionality(HttpSession session);
 	
 	/**
 	 * 查询手机号是否存在
 	 * @param cellphone
 	 * */
-	Object checkCell(String cellphone);
+	DomainTransfer checkCell(String cellphone);
 	
 	/**
 	 * 查询公司中是否已经存在工号
@@ -101,35 +102,64 @@ public interface IEmployeeService {
 	 * @param code
 	 * 
 	 * */
-	Object checkCode(int company,String code);
+	DomainTransfer checkCode(int company,String code);
 	
 	/**
 	 * 得到所有的职员
 	 * */
-	Object getAll();
+	DomainTransfer getAll();
 	
 	/**
 	 * 得到当前用户所在公司的所有职员
 	 * @param session 用以获取当前用户
 	 * */
-	Object getByCompany(HttpSession session);
+	DomainTransfer getByCompany(HttpSession session);
 	
 	/**
 	 * 删除职员
 	 * @param id
 	 * 
 	 * */
-	Object delete(int id);
+	DomainTransfer delete(int id);
 	
 	/**
 	 * 修改职员
 	 * @param employee
 	 * */
-	Object update(Employee employee);
+	DomainTransfer update(Employee employee);
 	
 	/**
 	 * 得到职员详细信息
 	 * @param id
 	 * */
-	Object detail(int id);
+	DomainTransfer detail(int id);
+	
+	/**
+	 * 获取当前用户的角色
+	 * @param session
+	 * */
+	DomainTransfer getRole(HttpSession session);
+	
+	/**
+	 * 获得当前用户没有的角色
+	 * @param session
+	 * 
+	 * */
+	DomainTransfer getRoleNotIn(HttpSession session);
+	
+	/**
+	 * 加入当前用户到对应角色
+	 * @param roleid
+	 * @param session
+	 * 
+	 * */
+	DomainTransfer addRole(int roleid,HttpSession session);
+	
+	/**
+	 * 从角色中移除当前用户
+	 * @param roleid
+	 * @param session
+	 * */
+	DomainTransfer removeRole(int roleid,HttpSession session);
+	
 }

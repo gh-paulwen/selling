@@ -39,6 +39,7 @@
     
     <mvc:interceptors>
       <bean id="globalInterceptor" class="com.zhklong.selling.interceptor.GlobalInterceptor"/>
+      <bean id="functionalityInterceptor" class="com.zhklong.selling.interceptor.FunctionalityInterceptor"/>
     </mvc:interceptors>
     
 </beans>

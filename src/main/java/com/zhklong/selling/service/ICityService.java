@@ -1,5 +1,7 @@
 package com.zhklong.selling.service;
 
+import com.zhklong.selling.dto.DomainTransfer;
+
 /**
  * 省市服务类
  * @author paul
@@ -10,10 +12,10 @@ public interface ICityService {
 	/**
 	 * 获取省
 	 * */
-	Object getProvince();
+	DomainTransfer getProvince();
 	
 	/**
 	 * 用省id获取市
 	 * */
-	Object getByProvince(int province);
+	DomainTransfer getByProvince(int province);
 }

@@ -3,6 +3,7 @@ package com.zhklong.selling.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.mapper.CityMapper;
 import com.zhklong.selling.service.ICityService;
 
@@ -18,12 +19,16 @@ public class CityService implements ICityService{
 	@Autowired
 	private CityMapper cityMapper;
 	
-	public Object getProvince() {
-		return cityMapper.getProvince();
+	public DomainTransfer getProvince() {
+		DomainTransfer dt = new DomainTransfer();
+		dt.save("listProvince", cityMapper.getProvince());
+		return dt;
 	}
 
-	public Object getByProvince(int province) {
-		return cityMapper.getByProvince(province);
+	public DomainTransfer getByProvince(int province) {
+		DomainTransfer dt = new DomainTransfer();
+		dt.save("listProvince", cityMapper.getProvince());
+		return dt;
 	}
 
 }

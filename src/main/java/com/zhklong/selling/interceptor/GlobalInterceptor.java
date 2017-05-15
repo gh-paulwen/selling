@@ -26,7 +26,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 		// response.setHeader("Access-Control-Allow-Headers",
 		// "x-requested-with");
 		((HttpServletResponse) response).addHeader("Access-Control-Allow-Credentials", "true");
-
+		
 		return true;
 	}
 

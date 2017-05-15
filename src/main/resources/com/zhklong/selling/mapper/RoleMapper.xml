@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhklong.selling.mapper.RoleMapper">
+    
+    <select id="getAll" resultType="Role">
+        select * from role
+    </select>
+    
+    
+	<select id="getByEmployee" resultType="Role">
+		select * from role where id in (select roleid from employee_role where
+		empid=#{0})
+	</select>
+	
+	<select id="getNotInEmployee" resultType="Role">
+	   select * from role where id not in (select roleid from employee_role where empid=#{0});
+	</select>
+
+	<insert id="addRole2Employee">
+        insert into employee_role (empid,roleid) values (#{0},#{1})
+	</insert>
+	
+	<delete id="removeRoleFromEmployee">
+	   delete from employee_role where empid=#{0} and roleid=#{1}
+	</delete>
+
+</mapper>

@@ -2,9 +2,11 @@ package com.zhklong.selling.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.zhklong.selling.entity.Employee;
 import com.zhklong.selling.mapper.EmployeeMapper;
@@ -38,10 +39,10 @@ public class CommonController {
 	private EmployeeMapper empMapper;
 	
 	@RequestMapping(path="/projectName",method=RequestMethod.GET)
-	@ResponseBody
-	public Object getProjectName(HttpServletRequest request){
+	public void getProjectName(HttpServletRequest request,HttpServletResponse response){
 		logger.info("get Project name , uuid : " + request.getAttribute("uuid"));
-		return request.getContextPath();
+		Cookie cookie = new Cookie("projectName",request.getContextPath());
+		response.addCookie(cookie);
 	}
 	
 	@RequestMapping(path="/downloadExcel",method=RequestMethod.GET)
@@ -51,5 +52,25 @@ public class CommonController {
 		response.setHeader("Content-Disposition", "attachment;fileName=test.xlsx");
 		List<Employee> list = empMapper.getAll();
 		excelUtil.getExcel(list, Employee.class, output);
-	}		
+	}
+	
+	@RequestMapping(path="/admin1",method=RequestMethod.GET)
+	public void admin1(Writer writer) throws IOException{
+		writer.write("admin1");
+	}
+	
+	@RequestMapping(path="/admin2",method=RequestMethod.GET)
+	public void admin2(Writer writer) throws IOException{
+		writer.write("admin2");
+	}
+	
+	@RequestMapping(path="/normal1",method=RequestMethod.GET)
+	public void normal1(Writer writer) throws IOException{
+		writer.write("normal1");
+	}
+	
+	@RequestMapping(path="/normal2",method=RequestMethod.GET)
+	public void normal2(Writer writer) throws IOException{
+		writer.write("normal2");
+	}
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.service.IStoreService;
 
 /**
@@ -33,7 +34,8 @@ public class StoreController {
 	@ResponseBody
 	public Object getByCompany(@RequestParam("company") int company){
 		logger.info("company : " + company);
-		return storeService.getByCompany(company);
+		DomainTransfer dt = storeService.getByCompany(company);
+		return dt.get();
 	}
 
 }

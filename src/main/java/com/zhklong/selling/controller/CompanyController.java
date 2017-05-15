@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.entity.Company;
 import com.zhklong.selling.service.ICompanyService;
 
@@ -34,7 +35,8 @@ public class CompanyController {
 	@ResponseBody
 	@RequestMapping(path="/getType",method=RequestMethod.GET)
 	public Object getType(){
-		return companyService.getType();
+		DomainTransfer dt = companyService.getType();
+		return dt.get();
 	}
 	
 	/**
@@ -45,7 +47,8 @@ public class CompanyController {
 	@ResponseBody
 	@RequestMapping(path="/submitSave",method=RequestMethod.POST)
 	public Object submitSave(@ModelAttribute("company")Company company,HttpSession session){
-		return companyService.save(company, session);
+		DomainTransfer dt =  companyService.save(company, session);
+		return dt.get();
 	}
 
 }

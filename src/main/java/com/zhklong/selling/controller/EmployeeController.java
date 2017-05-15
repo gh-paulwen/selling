@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.entity.Employee;
 import com.zhklong.selling.service.IEmployeeService;
 import com.zhklong.selling.util.ImageVerifyCodeUtil;
@@ -46,8 +47,8 @@ public class EmployeeController {
 	@RequestMapping(path = "/login", method = RequestMethod.POST)
 	public Object submitLogin(@ModelAttribute("employee") Employee employee,@RequestParam("verifyCode")String code,HttpSession session)
 			throws IOException {
-		Object obj = employeeService.login(employee,session,code);
-		return obj;
+		DomainTransfer dt = employeeService.login(employee,session,code);
+		return dt.get();
 	}
 
 	/**
@@ -56,8 +57,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path = "/sendCode", method = RequestMethod.GET)
 	public Object sendCode(HttpServletRequest request,HttpSession session) {
-		Object obj = employeeService.sendCode(session);
-		return obj;
+		DomainTransfer dt = employeeService.sendCode(session);
+		return dt.get();
 	}
 
 	/**
@@ -68,8 +69,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path = "/smsVerify", method = RequestMethod.POST)
 	public Object submitSMSVerify(@RequestParam("verifyCode") String verifyCode,HttpSession session) {
-		Object obj = employeeService.verifyCode(verifyCode, session);
-		return obj;
+		DomainTransfer dt = employeeService.verifyCode(verifyCode, session);
+		return dt.get();
 	}
 
 	/**
@@ -81,7 +82,8 @@ public class EmployeeController {
 	@RequestMapping(path = "/setPassword", method = RequestMethod.POST)
 	public @ResponseBody Object submitSetPassword(@RequestParam("password") String password,
 			@RequestParam("repeatPassword") String repeatPassword,HttpSession session) {
-		return employeeService.setPassword(password, repeatPassword, session);
+		DomainTransfer dt = employeeService.setPassword(password, repeatPassword, session);
+		return dt.get();
 	}
 	
 	/**
@@ -92,7 +94,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path = "/resetPassword",method=RequestMethod.POST)
 	public Object forgetPassword(@RequestParam("cellphone")String cellphone,HttpSession session){
-		return employeeService.resetPassword(cellphone, session);
+		DomainTransfer dt = employeeService.resetPassword(cellphone, session);
+		return dt.get();
 	}
 	
 	/**
@@ -115,7 +118,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getType",method=RequestMethod.GET)
 	public Object getType(HttpServletRequest request){
-		return employeeService.getEmployeeType();
+		DomainTransfer dt = employeeService.getEmployeeType();
+		return dt.get();
 	}
 	
 	/**
@@ -124,7 +128,10 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getCurrentEmployee",method=RequestMethod.GET)
 	public Object getCurrentEmployee(HttpSession session){
-		return session.getAttribute("currentEmployee");
+		DomainTransfer dt = new DomainTransfer();
+		Employee emp = (Employee) session.getAttribute("currentEmployee");
+		dt.save("currentEmployee",emp);
+		return dt.get();
 	}
 	
 	/**
@@ -134,7 +141,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/save",method=RequestMethod.POST)
 	public Object submitSave(@ModelAttribute("employee")Employee employee,HttpSession session){
-		return employeeService.save(employee, session);
+		DomainTransfer dt = employeeService.save(employee, session);
+		return dt.get();
 	}
 	
 	/**
@@ -144,7 +152,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getFunctionality",method=RequestMethod.GET)
 	public Object getFunctionality(HttpSession session){
-		return employeeService.getFunctionality(session);
+		DomainTransfer dt = employeeService.getFunctionality(session);
+		return dt.get();
 	}
 	
 	/**
@@ -155,7 +164,8 @@ public class EmployeeController {
 	@RequestMapping(path="/checkCell",method=RequestMethod.GET)
 	public Object checkCell(@RequestParam("cellphone") String cellphone){
 		logger.info("cellphone : " + cellphone);
-		return employeeService.checkCell(cellphone);
+		DomainTransfer dt = employeeService.checkCell(cellphone);
+		return dt.get();
 	}
 	
 	/**
@@ -168,7 +178,8 @@ public class EmployeeController {
 	@RequestMapping(path="/checkCode",method=RequestMethod.GET)
 	public Object checkCode(@RequestParam("company")int company,@RequestParam("code") String code){
 		logger.info("code : " + code + ", company : " + company);
-		return employeeService.checkCode(company, code);
+		DomainTransfer dt = employeeService.checkCode(company, code);
+		return dt.get();
 	}
 	
 	/**
@@ -178,8 +189,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getAll",method=RequestMethod.GET)
 	public Object getAll(){
-		logger.info("");
-		return employeeService.getAll();
+		DomainTransfer dt =  employeeService.getAll();
+		return dt.get();
 	}
 	
 	/**
@@ -189,7 +200,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/getByCompany",method=RequestMethod.GET)
 	public Object getByCompany(HttpSession session){
-		return employeeService.getByCompany(session);
+		DomainTransfer dt = employeeService.getByCompany(session);
+		return dt.get();
 	}
 	
 	/**
@@ -199,7 +211,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/delete",method=RequestMethod.GET)
 	public Object delete(@RequestParam("id") int id){
-		return employeeService.delete(id);
+		DomainTransfer dt = employeeService.delete(id);
+		return dt.get();
 	}
 	
 	/**
@@ -209,7 +222,8 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/detail",method=RequestMethod.GET)
 	public Object detail(@RequestParam("id") int id){
-		return employeeService.detail(id);
+		DomainTransfer dt =  employeeService.detail(id);
+		return dt.get();
 	}
 	
 	/**
@@ -219,6 +233,52 @@ public class EmployeeController {
 	@ResponseBody
 	@RequestMapping(path="/update",method=RequestMethod.POST)
 	public Object update(@ModelAttribute("employee") Employee employee){
-		return employeeService.update(employee);
+		DomainTransfer dt = employeeService.update(employee);
+		return dt.get();
+	}
+	
+	/**
+	 * 得到当前用户的角色
+	 * @param session
+	 * 
+	 * */
+	@RequestMapping(path="/getRole",method=RequestMethod.GET)
+	@ResponseBody
+	public Object getRole(HttpSession session){
+		return employeeService.getRole(session).get();
+	}
+	
+	/**
+	 * 得到当前用户不拥有的角色
+	 * @param session
+	 * 
+	 * */
+	@RequestMapping(path="/getNotIn",method=RequestMethod.GET)
+	@ResponseBody
+	public Object getRoleNotIn(HttpSession session){
+		return employeeService.getRoleNotIn(session).get();
+	}
+	
+	/**
+	 * 给当前用户添加角色
+	 * @param session
+	 * @param roleid
+	 * */
+	@RequestMapping(path="/addRole2Emp",method=RequestMethod.GET)
+	@ResponseBody
+	public Object addRole(@RequestParam("roleid") int roleid,HttpSession session){
+		DomainTransfer dt = employeeService.addRole(roleid, session);
+		return dt.get();
+	}
+	
+	/**
+	 * 移除当前用户的某角色
+	 * @param session
+	 * @param roleid
+	 * */
+	@RequestMapping(path="/removeRole",method=RequestMethod.GET)
+	@ResponseBody
+	public Object removeRole(@RequestParam("roleid") int roleid,HttpSession session){
+		return employeeService.removeRole(roleid, session).get();
 	}
 }

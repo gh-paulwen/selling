@@ -1,14 +1,12 @@
 package com.zhklong.selling.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.entity.Company;
 import com.zhklong.selling.entity.Employee;
 import com.zhklong.selling.mapper.CompanyMapper;
@@ -31,24 +29,26 @@ public class CompanyService implements ICompanyService{
 	@Autowired
 	private CompanyMapper companyMapper;
 	
-	public Object getType() {
-		return companyTypeMapper.getAll();
+	public DomainTransfer getType() {
+		DomainTransfer dt = new DomainTransfer();
+		dt.save("listCompany", companyTypeMapper.getAll());
+		return dt;
 	}
 
-	public Object save(Company company, HttpSession session) {
-		Map<String , Object> json = new HashMap<String,Object>();
+	public DomainTransfer save(Company company, HttpSession session) {
+		DomainTransfer dt = new DomainTransfer();
 		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
 		if(curEmp == null){
-			json.put("result", 0);
-			json.put("message", "未登录");
-			return json;
+			dt.save("result", 0);
+			dt.save("message", "未登录");
+			return dt;
 		}
 		company.setReviser(curEmp.getId());
 		companyMapper.insert(company);
-		json.put("result", 1);
-		json.put("message", "添加成功");
+		dt.save("result", 1);
+		dt.save("message", "添加成功");
 		logger.info("add company , company name : " + company.getName() + " , emp name : " + curEmp.getName());
-		return json;
+		return dt;
 	}
 
 }

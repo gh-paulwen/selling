@@ -42,7 +42,7 @@ public class ExcelUtil {
 		}
 		
 		for(T t : list){
-			XSSFRow row = sheet.createRow(rownum);
+			XSSFRow row = sheet.createRow(rownum++);
 			cellnum = 0;
 			for(String key:methodMap.keySet()){
 				Method method = methodMap.get(key);

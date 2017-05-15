@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zhklong.selling.dto.DomainTransfer;
 import com.zhklong.selling.service.ICityService;
 
 /**
@@ -23,12 +24,14 @@ public class CityController {
 	
 	@RequestMapping(path="/province",method=RequestMethod.GET)
 	public Object getProvice(){
-		return cityService.getProvince();
+		DomainTransfer dt = cityService.getProvince();
+		return dt.get();
 	}
 	
 	@RequestMapping(path="/city",method=RequestMethod.GET)
 	public Object getByProvince(@RequestParam("province") int province){
-		return cityService.getByProvince(province);
+		DomainTransfer dt = cityService.getByProvince(province);
+		return dt.get();
 	}
 
 }
