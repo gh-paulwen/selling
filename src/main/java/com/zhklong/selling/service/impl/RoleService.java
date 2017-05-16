@@ -60,4 +60,36 @@ public class RoleService implements IRoleService{
 		dt.save("listFunctionality", list);
 		return dt;
 	}
+
+	@Override
+	public DomainTransfer getByEmp(int empid) {
+		DomainTransfer dt= new DomainTransfer();
+		List<Role> list = roleMapper.getByEmployee(empid);
+		dt.save("listRole", list);
+		return dt;
+	}
+
+	@Override
+	public DomainTransfer getNotInEmp(int empid) {
+		DomainTransfer dt= new DomainTransfer();
+		List<Role> list = roleMapper.getNotInEmployee(empid);
+		dt.save("listRole", list);
+		return dt;
+	}
+
+	@Override
+	public DomainTransfer addRole2Emp(int roleid, int empid) {
+		DomainTransfer dt = new DomainTransfer();
+		roleMapper.addRole2Employee(empid, roleid);
+		dt.save("message", "添加成功");
+		return dt;
+	}
+
+	@Override
+	public DomainTransfer removeRoleFromEmp(int roleid, int empid) {
+		DomainTransfer dt = new DomainTransfer();
+		roleMapper.removeRoleFromEmployee(empid, roleid);
+		dt.save("message", "移除成功");
+		return dt;
+	}
 }

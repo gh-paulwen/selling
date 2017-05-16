@@ -42,6 +42,25 @@ public class RoleController {
 		return roleService.getNotInRole(roleid).get();
 	}
 	
+	@RequestMapping(path="/getByEmp",method=RequestMethod.GET)
+	public @ResponseBody Object getByEmp(@RequestParam("empid") int empid){
+		return roleService.getByEmp(empid).get();
+	}
+	
+	@RequestMapping(path="/getNotInEmp",method=RequestMethod.GET)
+	public @ResponseBody Object getNotInEmp(@RequestParam("empid") int empid){
+		return roleService.getNotInEmp(empid).get();
+	}
+	
+	@RequestMapping(path="/add2Employee",method=RequestMethod.GET)
+	public @ResponseBody Object add2Employee(@RequestParam("empid") int empid,@RequestParam("roleid") int roleid){
+		return roleService.addRole2Emp(roleid, empid).get();
+	}
+	
+	@RequestMapping(path="/removeFromEmployee",method=RequestMethod.GET)
+	public @ResponseBody Object removeFromEmployee(@RequestParam("empid") int empid,@RequestParam("roleid") int roleid){
+		return roleService.removeRoleFromEmp(roleid, empid).get();
+	}
 	
 
 }

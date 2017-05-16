@@ -29,36 +29,40 @@ import com.zhklong.selling.util.ValidateUtil;
  * */
 @Service
 public class EmployeeService implements IEmployeeService {
-	
-	private static final Logger logger = Logger.getLogger(EmployeeService.class.getName());
+
+	private static final Logger logger = Logger.getLogger(EmployeeService.class
+			.getName());
 
 	@Autowired
 	private EmployeeMapper employeeMapper;
 
 	@Autowired
 	private EmployeeTypeMapper employeeTypeMapper;
-	
+
 	@Autowired
 	private RoleMapper roleMapper;
-	
+
 	@Autowired
 	private FunctionalityMapper functionalityMapper;
 
 	@Autowired
 	private SMSUtil smsUtil;
-	
-	public DomainTransfer login(Employee employee,  HttpSession session, String code) {
+
+	public DomainTransfer login(Employee employee, HttpSession session,
+			String code) {
 		DomainTransfer dt = new DomainTransfer();
 		String cellphone = employee.getCellphone();
 		String password = employee.getPassword();
 		if (!ValidateUtil.checkCellphone(cellphone)) {
-			logger.info("NOT a well formed cellphone number,cellphone : " + cellphone);
+			logger.info("NOT a well formed cellphone number,cellphone : "
+					+ cellphone);
 			dt.save("message", "不是有效的电话号码");
 			return dt;
 		}
 		employee = employeeMapper.getByCell(employee.getCellphone());
 		if (employee == null) {
-			logger.info("UNREGISTERED cellphone number,cellphone : " + cellphone);
+			logger.info("UNREGISTERED cellphone number,cellphone : "
+					+ cellphone);
 			dt.save("message", "非企业注册职工，请联系公司管理员为该手机号注册");
 			return dt;
 		}
@@ -96,7 +100,8 @@ public class EmployeeService implements IEmployeeService {
 			return dt;
 		}
 		session.setAttribute(Employee.CURRENT_EMPLOYEE, employee);
-		logger.info("success , cellphone : " + cellphone + ", employee name :" + employee.getName());
+		logger.info("success , cellphone : " + cellphone + ", employee name :"
+				+ employee.getName());
 		dt.save("message", "登录成功");
 		dt.save("redirect", 2);
 		return dt;
@@ -108,13 +113,15 @@ public class EmployeeService implements IEmployeeService {
 		session.setAttribute("verifyCode", code);
 		String cellphone = (String) session.getAttribute("cellphone");
 		logger.info("send sms verify code , cellphone : " + cellphone);
-		if (cellphone == null || cellphone.isEmpty()){
-			logger.info("send sms verify code but FAILED for cellphone is NOT exist , cellphone : " + cellphone);
+		if (cellphone == null || cellphone.isEmpty()) {
+			logger.info("send sms verify code but FAILED for cellphone is NOT exist , cellphone : "
+					+ cellphone);
 			dt.save("message", "error");
 			return dt;
 		}
 		smsUtil.sendVerifyCode(cellphone, code);
-		logger.info("send sms verify code SUCCEEDED , cellphone : " + cellphone + ",sms code : " + code);
+		logger.info("send sms verify code SUCCEEDED , cellphone : " + cellphone
+				+ ",sms code : " + code);
 		dt.save("message", "success");
 		return dt;
 	}
@@ -123,14 +130,15 @@ public class EmployeeService implements IEmployeeService {
 		DomainTransfer dt = new DomainTransfer();
 		String message = "验证码错误";
 		String sessionCode = (String) session.getAttribute("verifyCode");
-		String cellphone  = (String) session.getAttribute("cellphone");
+		String cellphone = (String) session.getAttribute("cellphone");
 		if (sessionCode == null || sessionCode.isEmpty()) {
 			logger.info("session sms code NOT exist");
 			dt.save("message", "验证码未生成");
 			return dt;
 		}
 		if (sessionCode.equals(code)) {
-			logger.info("sms verification SUCCEEDED , cellphone : " + cellphone + ",sms code : " + code);
+			logger.info("sms verification SUCCEEDED , cellphone : " + cellphone
+					+ ",sms code : " + code);
 			message = "验证成功";
 			dt.save("redirect", 1);
 		}
@@ -138,20 +146,22 @@ public class EmployeeService implements IEmployeeService {
 		return dt;
 	}
 
-	public DomainTransfer setPassword(String password, String repeatPassword, HttpSession session) {
+	public DomainTransfer setPassword(String password, String repeatPassword,
+			HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		
+
 		if (password == null || repeatPassword == null || password.isEmpty()
 				|| repeatPassword.isEmpty()) {
 			logger.info("EMPTY password");
 			dt.save("message", "密码不能为空");
 			return dt;
-		} 
+		}
 		if (!password.trim().equals(repeatPassword.trim())) {
-			logger.info("different two , one : " + password + ",other : "+repeatPassword);
-			dt.save("message","两次输入不一致");
+			logger.info("different two , one : " + password + ",other : "
+					+ repeatPassword);
+			dt.save("message", "两次输入不一致");
 			return dt;
-		} 
+		}
 		synchronized (EmployeeService.this) {
 			dt.save("redirect", 1);
 			String cellphone = (String) session.getAttribute("cellphone");
@@ -159,7 +169,7 @@ public class EmployeeService implements IEmployeeService {
 			employee.setPasswordstatus('1');
 			employee.setPassword(password);
 			employeeMapper.update(employee);
-			logger.info("SUCCEEDED,cellphone : "+employee.getCellphone());
+			logger.info("SUCCEEDED,cellphone : " + employee.getCellphone());
 		}
 		dt.save("message", "密码设置成功");
 		return dt;
@@ -172,7 +182,7 @@ public class EmployeeService implements IEmployeeService {
 		return dt;
 	}
 
-	public DomainTransfer resetPassword(String cellphone,  HttpSession session) {
+	public DomainTransfer resetPassword(String cellphone, HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
 		if (!ValidateUtil.checkCellphone(cellphone)) {
 			logger.info("NOT well formed cellphone , cellphone : " + cellphone);
@@ -205,7 +215,8 @@ public class EmployeeService implements IEmployeeService {
 
 	public DomainTransfer save(Employee employee, HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
 		if (curEmp == null) {
 			logger.info("NO login");
 			dt.save("message", "未登录");
@@ -221,7 +232,8 @@ public class EmployeeService implements IEmployeeService {
 			dt.save("message", "员工姓名不能为空");
 			return dt;
 		}
-		if (employee.getCellphone() == null	|| employee.getCellphone().isEmpty()) {
+		if (employee.getCellphone() == null
+				|| employee.getCellphone().isEmpty()) {
 			logger.info("EMPTY employee cellphone");
 			dt.save("message", "员工手机号不能为空");
 			return dt;
@@ -241,12 +253,14 @@ public class EmployeeService implements IEmployeeService {
 
 	public DomainTransfer getFunctionality(HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if(curEmp == null){
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
+		if (curEmp == null) {
 			logger.info("not login");
 			return null;
 		}
-		List<Functionality> list = functionalityMapper.getByEmployee(curEmp.getId());
+		List<Functionality> list = functionalityMapper.getByEmployee(curEmp
+				.getId());
 		dt.save("listFunctionality", list);
 		logger.info("functionalitys : " + list.size());
 		return dt;
@@ -255,9 +269,9 @@ public class EmployeeService implements IEmployeeService {
 	public DomainTransfer checkCell(String cellphone) {
 		DomainTransfer dt = new DomainTransfer();
 		Employee emp = employeeMapper.getByCell(cellphone);
-		if(emp == null){
+		if (emp == null) {
 			dt.save("result", 0);
-		}else {
+		} else {
 			dt.save("result", 1);
 		}
 		return dt;
@@ -266,9 +280,9 @@ public class EmployeeService implements IEmployeeService {
 	public DomainTransfer checkCode(int company, String code) {
 		DomainTransfer dt = new DomainTransfer();
 		Employee emp = employeeMapper.getByCodeCompany(code, company);
-		if(emp == null){
+		if (emp == null) {
 			dt.save("result", 0);
-		}else {
+		} else {
 			dt.save("result", 1);
 		}
 		return dt;
@@ -276,15 +290,16 @@ public class EmployeeService implements IEmployeeService {
 
 	public DomainTransfer getAll() {
 		DomainTransfer dt = new DomainTransfer();
-		List<Employee> list =  employeeMapper.getAll();
+		List<Employee> list = employeeMapper.getAll();
 		dt.save("listEmployee", list);
 		return dt;
 	}
 
 	public DomainTransfer getByCompany(HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if(curEmp == null){
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
+		if (curEmp == null) {
 			dt.save("result", 0);
 			return dt;
 		}
@@ -297,7 +312,7 @@ public class EmployeeService implements IEmployeeService {
 	public DomainTransfer delete(int id) {
 		DomainTransfer dt = new DomainTransfer();
 		Employee emp = employeeMapper.getById(id);
-		if(emp == null){
+		if (emp == null) {
 			dt.save("message", "职员不存在");
 			dt.save("result", 0);
 			return dt;
@@ -306,14 +321,15 @@ public class EmployeeService implements IEmployeeService {
 		employeeMapper.update(emp);
 		dt.save("message", "删除成功");
 		dt.save("result", 1);
-		logger.info("delete emp , id : " + emp.getId() + " , name : " + emp.getName());
+		logger.info("delete emp , id : " + emp.getId() + " , name : "
+				+ emp.getName());
 		return dt;
 	}
 
 	public DomainTransfer update(Employee employee) {
 		DomainTransfer dt = new DomainTransfer();
 		Employee emp = employeeMapper.getById(employee.getId());
-		if(emp == null){
+		if (emp == null) {
 			dt.save("message", "职员不存在");
 			dt.save("result", 0);
 			return dt;
@@ -335,8 +351,9 @@ public class EmployeeService implements IEmployeeService {
 	@Override
 	public DomainTransfer getRole(HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if(curEmp == null){
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
+		if (curEmp == null) {
 			dt.save("message", "未登录");
 			return dt;
 		}
@@ -348,8 +365,9 @@ public class EmployeeService implements IEmployeeService {
 	@Override
 	public DomainTransfer addRole(int roleid, HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if(curEmp == null){
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
+		if (curEmp == null) {
 			dt.save("message", "未登录");
 			return dt;
 		}
@@ -361,8 +379,9 @@ public class EmployeeService implements IEmployeeService {
 	@Override
 	public DomainTransfer removeRole(int roleid, HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if(curEmp == null){
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
+		if (curEmp == null) {
 			dt.save("message", "未登录");
 			return dt;
 		}
@@ -374,8 +393,9 @@ public class EmployeeService implements IEmployeeService {
 	@Override
 	public DomainTransfer getRoleNotIn(HttpSession session) {
 		DomainTransfer dt = new DomainTransfer();
-		Employee curEmp = (Employee) session.getAttribute(Employee.CURRENT_EMPLOYEE);
-		if(curEmp == null){
+		Employee curEmp = (Employee) session
+				.getAttribute(Employee.CURRENT_EMPLOYEE);
+		if (curEmp == null) {
 			dt.save("message", "未登录");
 			return dt;
 		}
@@ -383,4 +403,5 @@ public class EmployeeService implements IEmployeeService {
 		dt.save("listRole", list);
 		return dt;
 	}
+
 }
